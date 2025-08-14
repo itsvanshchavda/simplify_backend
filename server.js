@@ -3,8 +3,9 @@ import cors from "cors";
 import morgan from "morgan";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ quiet: true });
 import http from "http";
+import authRoutes from "./routes/authroutes.js";
 
 mongoose
   .connect(process.env.MONGO_URI, {})
@@ -20,7 +21,10 @@ const server = http.createServer(app);
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+
+app.use("/api/v1/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Simplify Backend API");
