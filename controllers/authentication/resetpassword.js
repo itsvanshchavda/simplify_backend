@@ -3,8 +3,7 @@ import crypto from "crypto";
 import User from "../../models/User.js";
 const resetpassword = async (req, res) => {
   try {
-    const { token } = req.params;
-    const { email, password } = req.body;
+    const { email, password, token } = req.body;
 
     if (!token)
       return res.status(400).json({ error: "Reset token is required" });

@@ -7,7 +7,6 @@ apiKey.apiKey = process.env.BREVO || "";
 
 // Create TransactionalEmailsApi instance
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-
 const templatePasswordReset = (resetLink) => {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -17,12 +16,32 @@ const templatePasswordReset = (resetLink) => {
           We received a request to reset your password. Click the button below to proceed:
         </p>
         
-        <!-- Main clickable button -->
-        <a href="${resetLink}" 
-           target="_blank" 
-           style="display: inline-block; background-color: #007bff; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">
-          Reset Password
-        </a>
+        <!-- Improved button with table-based approach for better email client support -->
+        <table cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+          <tr>
+            <td style="background-color: #007bff; border-radius: 5px; text-align: center;">
+              <a href="${resetLink}" 
+                 target="_blank"
+                 style="display: inline-block; 
+                        color: #ffffff !important; 
+                        text-decoration: none !important; 
+                        padding: 12px 20px; 
+                        font-size: 16px; 
+                        font-weight: bold;
+                        border-radius: 5px;
+                        mso-padding-alt: 0;
+                        font-family: Arial, sans-serif;">
+                <!--[if mso]>
+                <i style="letter-spacing: 20px; mso-font-width: -100%; mso-text-raise: 18pt;">&nbsp;</i>
+                <![endif]-->
+                <span style="mso-text-raise: 9pt;">Reset Password</span>
+                <!--[if mso]>
+                <i style="letter-spacing: 20px; mso-font-width: -100%;">&nbsp;</i>
+                <![endif]-->
+              </a>
+            </td>
+          </tr>
+        </table>
 
         <p style="color: #666; font-size: 14px; margin-top: 20px;">
           This link will expire in <strong>1 hour</strong>.
