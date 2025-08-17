@@ -7,6 +7,8 @@ dotenv.config({ quiet: true });
 import http from "http";
 import authRoutes from "./routes/authroutes.js";
 import userRoutes from "./routes/userroutes.js";
+import session from "express-session";
+import passport from "./utils/passport.js";
 
 mongoose
   .connect(process.env.MONGO_URI, {})
@@ -20,10 +22,23 @@ mongoose
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors());
+app.use(passport.initialize());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);

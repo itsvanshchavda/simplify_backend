@@ -27,6 +27,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
 
+    provider: {
+      type: String,
+    },
+
+    providerId: {
+      type: String,
+    },
+
     token: {
       type: String,
     },
