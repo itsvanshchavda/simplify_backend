@@ -1,6 +1,6 @@
 import passport from "passport";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ quiet: true });
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as LinkedInStrategy } from "passport-linkedin-oauth2";
 import User from "../models/User.js";

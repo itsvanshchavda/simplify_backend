@@ -35,6 +35,11 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
+    default_resume: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "resumes",
+    },
+
     token: {
       type: String,
     },

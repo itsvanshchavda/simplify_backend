@@ -10,6 +10,7 @@ import userRoutes from "./routes/userroutes.js";
 import session from "express-session";
 import passport from "./utils/passport.js";
 
+import resumeRoutes from "./routes/resumeroutes.js";
 mongoose
   .connect(process.env.MONGO_URI, {})
   .then(() => {
@@ -42,6 +43,7 @@ app.use(
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/resume", resumeRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Simplify Backend API");

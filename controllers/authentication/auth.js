@@ -1,6 +1,6 @@
 import passport from "passport";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // Google
 export const googleAuth = passport.authenticate("google", {
