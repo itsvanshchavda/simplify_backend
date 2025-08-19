@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
+    profilePicture: {
+      type: String,
+    },
+
     email: {
       type: String,
       unique: true,
@@ -40,6 +44,45 @@ const userSchema = new mongoose.Schema(
       ref: "resumes",
     },
 
+    work: { type: Object },
+    education: { type: Object },
+    projects: { type: Object },
+    skills: { type: Object },
+    languages: { type: Object },
+    totalYearsOfExperience: { type: String },
+    socialLinks: {
+      linkedIn: { type: String },
+      github: { type: String },
+      portfolio: { type: String },
+    },
+
+    phone: {
+      type: String,
+    },
+
+    onboardingStep: {
+      type: Number,
+      default: 0,
+    },
+
+    application_kit: {
+      default_customized_resume: {
+        type: Object,
+      },
+
+      default_job: {
+        type: Object,
+      },
+
+      default_followup_mail: {
+        type: Object,
+      },
+
+      default_cover_letter: {
+        type: Object,
+      },
+    },
+
     token: {
       type: String,
     },
@@ -47,6 +90,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model("users", userSchema);
 
 export default User;

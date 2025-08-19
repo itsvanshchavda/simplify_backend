@@ -20,7 +20,7 @@ const resumeSchema = mongoose.Schema(
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
     },
     skills: {
       type: Array,
@@ -42,6 +42,6 @@ const resumeSchema = mongoose.Schema(
   }
 );
 
-const resumeModel = mongoose.model("resumes", resumeSchema);
+const Resume = mongoose.model("resumes", resumeSchema);
 
-export default resumeModel;
+export default Resume;

@@ -1,16 +1,29 @@
 import mongoose from "mongoose";
 
 const jobSchema = mongoose.Schema({
-  job_url: { type: String },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
+
   job_title: { type: String },
-  job_description: { type: String },
-  job_location: { type: String },
-  job_type: { type: String },
-  company_name: { type: String },
+  degree_required: { type: Boolean },
+  company: { type: String },
+  experience: { type: String }, // e.g., "2-3 years"
+  skills: { type: [String] },
+  platform: { type: String },
+  location: { type: String },
   company_logo: { type: String },
-  skills: { type: Array },
-  experience: { type: Number },
-  salary: { type: Number },
+  applications: { type: Number },
+  compensation: { type: String },
+  job_url: { type: String, unique: true },
+  job_posted: { type: String },
+  description: { type: String },
+  remote: { type: Boolean }, // true if remote/hybrid
+  job_type: { type: Array },
+  industry: { type: String },
+  sponsorship: { type: Boolean },
+  easyapply: { type: Boolean },
 });
 
 const Job = mongoose.model("jobs", jobSchema);

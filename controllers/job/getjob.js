@@ -5,97 +5,113 @@ dotenv.config({ quiet: true });
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API });
 
-const extractJobFromUrl = async (url) => {
-  if (!url) return null;
+const getJob = async (req, res) => {
+  const { url } = req.body;
+
+  if (!url) {
+    return res.status(400).json({ error: "Job url is not provided" });
+  }
 
   console.log(`🔍 Extracting from: ${url}`);
 
   try {
     // 1. Get full rendered HTML using Puppeteer
     const html = await fetchHtmlWithPuppeteer(url);
-    if (!html) throw new Error("No HTML content");
+    if (!html) console.log("No HTML Content Found!!");
 
     // 2. Send HTML into Gemini with your JSON schema prompt
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `${createExtractionPrompt()}\n\nHTML:\n${html}`,
+      contents: `\n\nHTML:\n${html}
+      
+      Extract all job posting details in a structured JSON format. Make sure to read everything carefully.
+
+        Fields to extract:
+
+        JOB TITLE: Use the most prominent job title (<title>, <h1>, <h2>, etc.)
+        COMPANY: Company name near logo, header, or job info
+        LOCATION: City, state, country; indicate if remote/hybrid/onsite
+        DESCRIPTION: Full job description including responsibilities, requirements, company info
+        SKILLS: All technical skills, programming languages, tools, frameworks
+        EXPERIENCE: Years of experience and seniority level
+        SALARY: Extract salary in short clean format. Example:
+        SALARY: ₹3,00,000 - ₹4,80,000 / year
+        PLATFORM: Source platform (LinkedIn, Internshala, etc.)
+        COMPANY LOGO: URL or empty string
+        APPLICATIONS: Number of applications if mentioned
+
+        Extract the job posting date and return how long ago it was from today in a human-readable format. 
+
+        Example formats:
+        - "10 seconds ago"
+        - "5 minutes ago"
+        - "10 hours ago"
+        - "3 days ago"
+        - "2 weeks ago"
+        - "5 months ago"
+
+        Return only the relative time, not the full date.
+
+        REMOTE: true if remote/hybrid, false otherwise
+        JOB TYPE: Full-time, Part-time, Internship, etc.
+        INDUSTRY: Company industry
+        SPONSORSHIP: true if visa sponsorship offered, false otherwise
+        EASYAPPLY: true if easy apply is available, false otherwise
+
+        Return JSON exactly like this:
+
+        {
+        "job_title": "",
+        "platform": "",
+        "company_name": "",
+        "company_logo": "",
+        "location": "",
+        "description": "",
+        "skills": [],
+        "experience": "",
+        "salary": "",
+        "applications": null,
+        "job_posted": "",
+        "remote": false,
+        "job_type": [],
+        "industry": "",
+        "sponsorship": false,
+        "easyapply": false,
+        }
+
+        IMPORTANT: Be thorough. Extract all details accurately. Use short and clear formats for salary and experience.
+      
+      `,
     });
 
     // 3. Parse AI output into JSON
-    const jobData = parseJson(response.text);
+
+    let jobData;
+
+    if (response.text) {
+      console.log("🔍 Parsing AI response...");
+      jobData = parseJson(response.text);
+
+      jobData.job_url = url; // Ensure job_url is set
+    }
+
     if (isGoodData(jobData)) {
       console.log("✅ Extracted successfully");
-      return jobData;
+      return res.status(200).json({
+        job: jobData,
+        message: "Job data extracted successfully",
+      });
     } else {
       console.error("⚠️ Bad or incomplete job data");
-      return null;
+      return res.status(500).json({
+        error: "Bad or incomplete job data extracted",
+      });
     }
   } catch (error) {
     console.error("❌ Extraction failed:", error.message);
-    return null;
+    return res.status(500).json({ error: "Extraction failed" });
   }
 };
-
-// ---------- Helpers ----------
-const createExtractionPrompt = () => `
-Extract all job posting details in a structured JSON format. Make sure to read everything carefully.
-
-Fields to extract:
-
-JOB TITLE: Use the most prominent job title (<title>, <h1>, <h2>, etc.)
-COMPANY: Company name near logo, header, or job info
-LOCATION: City, state, country; indicate if remote/hybrid/onsite
-DESCRIPTION: Full job description including responsibilities, requirements, company info
-SKILLS: All technical skills, programming languages, tools, frameworks
-EXPERIENCE: Years of experience and seniority level
-SALARY: Extract salary in short clean format. Example:
-  SALARY: ₹3,00,000 - ₹4,80,000 / year
-PLATFORM: Source platform (LinkedIn, Internshala, etc.)
-COMPANY LOGO: URL or empty string
-APPLICATIONS: Number of applications if mentioned
-
-Extract the job posting date and return how long ago it was from today in a human-readable format. 
-
-Example formats:
-- "10 seconds ago"
-- "5 minutes ago"
-- "10 hours ago"
-- "3 days ago"
-- "2 weeks ago"
-- "5 months ago"
-
-Return only the relative time, not the full date.
-
-REMOTE: true if remote/hybrid, false otherwise
-JOB TYPE: Full-time, Part-time, Internship, etc.
-INDUSTRY: Company industry
-SPONSORSHIP: true if visa sponsorship offered, false otherwise
-EASYAPPLY: true if easy apply is available, false otherwise
-
-Return JSON exactly like this:
-
-{
-  "job_title": "",
-  "platform": "",
-  "company_name": "",
-  "company_logo": "",
-  "location": "",
-  "description": "",
-  "skills": [],
-  "experience": "",
-  "salary": "",
-  "applications": null,
-  "job_posted": "",
-  "remote": false,
-  "job_type": [],
-  "industry": "",
-  "sponsorship": false,
-  "easyapply": false,
-  "job_url": ""
-}
-
-IMPORTANT: Be thorough. Extract all details accurately. Use short and clear formats for salary and experience.
-`;
 
 // Puppeteer fetch full rendered HTML
 const fetchHtmlWithPuppeteer = async (url) => {
@@ -179,4 +195,4 @@ const isGoodData = (data) => {
   );
 };
 
-export default extractJobFromUrl;
+export default getJob;

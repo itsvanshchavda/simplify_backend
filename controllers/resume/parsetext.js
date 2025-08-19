@@ -1,53 +1,34 @@
 import upload from "../../middleware/upload.js";
-import pdf from "pdf-parse";
-import mammoth from "mammoth";
+import convertText from "../../helpers/convert-text.js";
 
 const parseText = async (req, res) => {
-  const bytesToMegabytes = (bytes) => {
-    return bytes / (1024 * 1024);
-  };
-
   try {
     upload(req, res, async (err) => {
       if (err) {
-        return res.status(400).json({ error: "File upload failed" });
+        return res.status(400).send({ error: "File upload failed" });
       }
 
       if (!req.files) {
-        return res.status(400).json({ error: "No file uploaded" });
+        return res.status(400).send({ error: "No file uploaded" });
       }
 
       const file = req.files[0];
 
       try {
-        let extractedText = "";
+        const extractedText = await convertText(file);
 
-        if (file.mimetype === "application/pdf") {
-          const data = await pdf(file.buffer);
-          extractedText = data.text;
-        } else if (
-          file.mimetype ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        ) {
-          const result = await mammoth.extractRawText({ buffer: file.buffer });
-          extractedText = result.value;
-        } else if (file.mimetype === "text/plain") {
-          extractedText = file.buffer.toString("utf8");
-        } else {
-          return res.status(400).json({
-            error:
-              "Unsupported file type. Please upload PDF, DOCX, or TXT files.",
-          });
+        if (!extractedText) {
+          return res.status(400).json({ error: "No text extracted from file" });
         }
 
-        return res.status(200).json({
+        res.status(200).json({
           message: "File uploaded & text extracted successfully",
           file: {
             originalName: file.originalname,
             mimeType: file.mimetype,
-            size: `${bytesToMegabytes(file.size).toFixed(2)} MB`,
+            size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
           },
-          extractedText: extractedText,
+          text: extractedText,
         });
       } catch (extractError) {
         console.error("Text extraction error:", extractError);
