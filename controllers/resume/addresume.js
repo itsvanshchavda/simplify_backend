@@ -66,6 +66,7 @@ const addResume = async (req, res) => {
         skills: extractedJson.skills || [],
         yearsOfExperience: extractedJson.totalYearsOfExperience || 0,
         degreeType: extractedJson.degreeType || 0,
+        skills: extractedJson.allSkills || [],
       });
 
       await resume.save();

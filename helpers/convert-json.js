@@ -25,6 +25,7 @@ FORMATTING RULES:
 - Experience descriptions: Format as "<ul><li>Point 1</li><li>Point 2</li></ul>"
 - Use <strong> tags for important keywords
 - Remove all \\n characters
+- For skills use proper headings of skills like "Programming Languages", "Frameworks", etc. and add skills accordingly.
 
 CALCULATIONS:
 - totalYearsOfExperience: Sum all work experience durations (integer)

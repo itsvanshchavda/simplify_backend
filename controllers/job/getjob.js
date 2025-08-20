@@ -54,7 +54,7 @@ const getJob = async (req, res) => {
 
         REMOTE: true if remote/hybrid, false otherwise
         JOB TYPE: Full-time, Part-time, Internship, etc.
-        INDUSTRY: Company industry
+        INDUSTRY: Company industry no array only one string
         SPONSORSHIP: true if visa sponsorship offered, false otherwise
         EASYAPPLY: true if easy apply is available, false otherwise
 
@@ -127,6 +127,15 @@ const fetchHtmlWithPuppeteer = async (url) => {
   );
 
   try {
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      if (["image", "stylesheet", "font"].includes(req.resourceType())) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
     await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
 
     // ✅ Get full rendered HTML (no trimming, no cut off)

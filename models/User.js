@@ -65,6 +65,11 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
 
+    onboardingCompleted: {
+      type: Boolean,
+      default: false,
+    },
+
     application_kit: {
       default_customized_resume: {
         type: Object,

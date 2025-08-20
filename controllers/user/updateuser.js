@@ -4,7 +4,13 @@ const updateUser = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const { application_kit, onboardingStep, profilePicture } = req.body;
+    const {
+      application_kit,
+      onboardingStep,
+      profilePicture,
+      firstName,
+      lastName,
+    } = req.body;
     // find user and update
     const user = await User.findById(userId);
 
@@ -12,10 +18,10 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    user.firstName = firstName;
+    user.lastName = lastName;
     user.application_kit = application_kit;
-
     user.onboardingStep = onboardingStep;
-
     user.profilePicture = profilePicture;
 
     await user.save();

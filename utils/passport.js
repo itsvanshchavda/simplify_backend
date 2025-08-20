@@ -27,7 +27,7 @@ passport.use(
             firstName,
             lastName,
             email,
-            proider: "google",
+            provider: "google",
             providerId: profile.id,
           });
         }
