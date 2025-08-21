@@ -7,6 +7,11 @@ const coverletterSchema = mongoose.Schema(
       ref: "users",
     },
 
+    primary: {
+      type: Boolean,
+      default: false,
+    },
+
     jobId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "jobs",
