@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import User from "../../models/User.js";
 const customizeResume = async (req, res) => {
   try {
-    const { job_title, description, job_skills } = req.body;
+    const { job_title, description, job_skills, save } = req.body;
 
     const user = await User.findById(req.user.id).populate("default_resume");
 

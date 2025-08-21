@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -71,12 +71,9 @@ const userSchema = new mongoose.Schema(
     },
 
     application_kit: {
-      default_customized_resume: {
-        type: Object,
-      },
-
       default_job: {
-        type: Object,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "jobs",
       },
 
       default_followup_mail: {
@@ -84,7 +81,8 @@ const userSchema = new mongoose.Schema(
       },
 
       default_cover_letter: {
-        type: Object,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "coverletters",
       },
     },
 

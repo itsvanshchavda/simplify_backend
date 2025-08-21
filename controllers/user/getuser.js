@@ -5,7 +5,7 @@ const getUser = async (req, res) => {
     const userId = req.user._id;
     const user = await User.findById(userId)
       .select("-password")
-      .populate("default_resume");
+      .populate("default_resume application_kit.default_job");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

@@ -39,7 +39,6 @@ SUMMARY HANDLING:
     ],
     config: {
       temperature: 0.1,
-      maxOutputTokens: 2048,
       systemInstruction:
         "You are a helpful assistant that extracts structured information from resume text",
 

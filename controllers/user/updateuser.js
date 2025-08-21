@@ -5,24 +5,54 @@ const updateUser = async (req, res) => {
     const userId = req.user._id;
 
     const {
-      application_kit,
       onboardingStep,
       profilePicture,
       firstName,
       lastName,
+      default_job,
+      default_followup_mail,
+      default_cover_letter,
+      onboardingCompleted,
     } = req.body;
-    // find user and update
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate("default_resume");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.application_kit = application_kit;
-    user.onboardingStep = onboardingStep;
-    user.profilePicture = profilePicture;
+    if (firstName) {
+      user.firstName = firstName;
+    }
+
+    if (lastName) {
+      user.lastName = lastName;
+    }
+
+    if (default_job && default_job != null) {
+      user.application_kit.default_job = default_job;
+    }
+
+    if (default_followup_mail && default_followup_mail != null) {
+      user.application_kit.default_followup_mail = default_followup_mail;
+    }
+    if (default_cover_letter && default_cover_letter != null) {
+      user.application_kit.default_cover_letter = default_cover_letter;
+    }
+
+    if (onboardingStep) {
+      user.onboardingStep = onboardingStep;
+    }
+
+    if (profilePicture && profilePicture != null) {
+      user.profilePicture = profilePicture;
+    }
+
+    if (onboardingCompleted === true || onboardingCompleted === false) {
+      // Ensure onboardingCompleted is a boolean
+      user.onboardingCompleted = onboardingCompleted;
+    }
+
+    // Save the updated user
 
     await user.save();
 

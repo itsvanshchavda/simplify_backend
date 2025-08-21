@@ -45,7 +45,11 @@ const addResume = async (req, res) => {
 
       const html = resumeTemplate(extractedJson);
       const buffer = await downloadPdf(html);
-      const result = await uploadPdfBuffer(buffer, file.originalname);
+      const result = await uploadPdfBuffer(
+        buffer,
+        file.originalname,
+        "resumes"
+      );
 
       console.log("Uploaded PDF URL:", result);
 

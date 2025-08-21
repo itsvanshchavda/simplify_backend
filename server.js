@@ -10,6 +10,7 @@ import userRoutes from "./routes/userroutes.js";
 import session from "express-session";
 import passport from "./utils/passport.js";
 import jobRoutes from "./routes/jobroutes.js";
+import coverletterRoutes from "./routes/coverletterroutes.js";
 
 import resumeRoutes from "./routes/resumeroutes.js";
 mongoose
@@ -46,6 +47,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/resume", resumeRoutes);
 app.use("/api/v1/job", jobRoutes);
+app.use("/api/v1/coverletter", coverletterRoutes);
 app.get("/", (req, res) => {
   res.send("Welcome to the Simplify Backend API");
 });

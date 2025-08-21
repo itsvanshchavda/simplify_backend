@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
 dotenv.config({ quiet: true });
@@ -22,45 +22,49 @@ const getJob = async (req, res) => {
     // 2. Send HTML into Gemini with your JSON schema prompt
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `\n\nHTML:\n${html}
-      
-      Extract all job posting details in a structured JSON format. Make sure to read everything carefully.
+      contents: [
+        {
+          text: `You are given a raw job posting HTML:
 
-        Fields to extract:
+      HTML:
+      ${html}
 
-        JOB TITLE: Use the most prominent job title (<title>, <h1>, <h2>, etc.)
-        COMPANY: Company name near logo, header, or job info
-        LOCATION: City, state, country; indicate if remote/hybrid/onsite
-        DESCRIPTION: Full job description including responsibilities, requirements, company info
-        SKILLS: All technical skills, programming languages, tools, frameworks
-        EXPERIENCE: Years of experience and seniority level
-        SALARY: Extract salary in short clean format. Example:
-        SALARY: ₹3,00,000 - ₹4,80,000 / year
-        PLATFORM: Source platform (LinkedIn, Internshala, etc.)
-        COMPANY LOGO: URL or empty string
-        APPLICATIONS: Number of applications if mentioned
+      Your task is to carefully extract ALL relevant job posting details into a **single structured JSON object**.
 
-        Extract the job posting date and return how long ago it was from today in a human-readable format. 
+      ### Extraction Rules:
+      - Always read <title>, <h1>, <h2>, headers, and main content to find the most relevant values.
+      - Use short, clean formats. Do not include extra text, labels, or HTML tags.
+      - If a field is missing, leave it as an empty string "" (or null if specified).
 
-        Example formats:
+      ### Fields to Extract:
+      - job_url → "${url}"
+      - job_title → Most prominent title (<title>, <h1>, <h2>)
+      - platform → Source platform (LinkedIn, Internshala, Indeed, etc.)
+      - company_name → Company name (near logo, header, or job info)
+      - company_logo → Logo URL (or "" if not found)
+      - location → City, state, country. Indicate if Remote / Hybrid / Onsite
+      - description → Full job description (responsibilities, requirements, company info)
+      - skills → Array of technical skills, tools, programming languages, frameworks
+      - experience → Short clean format. Example: "2+ years", "Fresher", "Senior level"
+      - salary → Clean salary range. Example: "₹3,00,000 - ₹4,80,000 / year"
+      - applications → Number of applications if mentioned (else null)
+      - job_posted → Relative posting time (not full date). Examples:
         - "10 seconds ago"
         - "5 minutes ago"
-        - "10 hours ago"
         - "3 days ago"
         - "2 weeks ago"
         - "5 months ago"
+      - remote → true if Remote/Hybrid, false otherwise
+      - job_type → Array. Example: ["Full-time"], ["Internship"], ["Part-time"]
+      - industry → Company industry (only one string, no array)
+      - sponsorship → true if visa sponsorship is offered, else false
+      - easyapply → true if Easy Apply / Quick Apply option is available, else false
 
-        Return only the relative time, not the full date.
+      ### Output Format:
+      Return JSON in **exactly** this format (no extra text, no explanation):
 
-        REMOTE: true if remote/hybrid, false otherwise
-        JOB TYPE: Full-time, Part-time, Internship, etc.
-        INDUSTRY: Company industry no array only one string
-        SPONSORSHIP: true if visa sponsorship offered, false otherwise
-        EASYAPPLY: true if easy apply is available, false otherwise
-
-        Return JSON exactly like this:
-
-        {
+      {
+        "job_url": "${url}",
         "job_title": "",
         "platform": "",
         "company_name": "",
@@ -76,12 +80,58 @@ const getJob = async (req, res) => {
         "job_type": [],
         "industry": "",
         "sponsorship": false,
-        "easyapply": false,
-        }
-
-        IMPORTANT: Be thorough. Extract all details accurately. Use short and clear formats for salary and experience.
-      
+        "easyapply": false
+      }
       `,
+        },
+      ],
+      config: {
+        temperature: 0.1,
+        systemInstruction:
+          "You are a helpful assistant that extracts structured information from job postings",
+        responseMimeType: "application/json",
+        responseJsonSchema: {
+          type: "object",
+          properties: {
+            job_title: { type: Type.STRING },
+            job_url: { type: Type.STRING },
+            platform: { type: Type.STRING },
+            company_name: { type: Type.STRING },
+            company_logo: { type: Type.STRING },
+            location: { type: Type.STRING },
+            description: { type: Type.STRING },
+            skills: { type: Type.ARRAY, items: { type: Type.STRING } },
+            experience: { type: Type.STRING },
+            salary: { type: Type.STRING },
+            applications: { type: Type.NUMBER || Type.NULL },
+            job_posted: { type: Type.STRING },
+            remote: { type: Type.BOOLEAN },
+            job_type: { type: Type.ARRAY, items: { type: Type.STRING } },
+            industry: { type: Type.STRING },
+            sponsorship: { type: Type.BOOLEAN },
+            easyapply: { type: Type.BOOLEAN },
+          },
+          required: [
+            "job_url",
+            "job_title",
+            "platform",
+            "company_name",
+            "company_logo",
+            "location",
+            "description",
+            "skills",
+            "experience",
+            "salary",
+            "applications",
+            "job_posted",
+            "remote",
+            "job_type",
+            "industry",
+            "sponsorship",
+            "easyapply",
+          ],
+        },
+      },
     });
 
     // 3. Parse AI output into JSON
@@ -90,9 +140,7 @@ const getJob = async (req, res) => {
 
     if (response.text) {
       console.log("🔍 Parsing AI response...");
-      jobData = parseJson(response.text);
-
-      jobData.job_url = url; // Ensure job_url is set
+      jobData = JSON.parse(response.text);
     }
 
     if (isGoodData(jobData)) {
@@ -136,10 +184,19 @@ const fetchHtmlWithPuppeteer = async (url) => {
       }
     });
 
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
+
+    const html = await page.evaluate(() => {
+      // remove non-essential tags
+      document
+        .querySelectorAll("script, style, noscript")
+        .forEach((e) => e.remove());
+
+      // return cleaned HTML (not text)
+      return document.body.innerHTML;
+    });
 
     // ✅ Get full rendered HTML (no trimming, no cut off)
-    const html = await page.content();
 
     const isJobPost = async (page) => {
       // Get all visible text
@@ -175,17 +232,6 @@ const fetchHtmlWithPuppeteer = async (url) => {
     return null;
   } finally {
     await browser.close();
-  }
-};
-
-const parseJson = (text) => {
-  try {
-    let clean = text.trim();
-    if (clean.startsWith("```json")) clean = clean.slice(7, -3);
-    else if (clean.startsWith("```")) clean = clean.slice(3, -3);
-    return JSON.parse(clean);
-  } catch {
-    return null;
   }
 };
 
