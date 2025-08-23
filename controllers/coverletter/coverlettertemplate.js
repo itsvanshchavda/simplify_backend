@@ -34,7 +34,7 @@ const coverLetterTemplate = (resume, coverletter) => {
       }
       
       .a4-paper {
-        min-height: 297mm;
+  
         width: 100%;
         background: white;
         padding: 0;

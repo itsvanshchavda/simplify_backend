@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const resumeSchema = mongoose.Schema(
+const resumeSchema = new mongoose.Schema(
   {
     url: { type: String },
     filename: { type: String },
