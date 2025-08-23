@@ -195,6 +195,7 @@ const fetchHtmlWithPuppeteer = async (url) => {
       // return cleaned HTML (not text)
       return document.body.innerHTML;
     });
+    console.log("🚀 ~ fetchHtmlWithPuppeteer ~ html:", html);
 
     // ✅ Get full rendered HTML (no trimming, no cut off)
 
@@ -203,6 +204,7 @@ const fetchHtmlWithPuppeteer = async (url) => {
       const text = await page.evaluate(() =>
         document.body.innerText.toLowerCase()
       );
+      console.log("🚀 ~ isJobPost ~ text:", text);
 
       // Check for key indicators
       const hasJobTitle =
@@ -215,7 +217,7 @@ const fetchHtmlWithPuppeteer = async (url) => {
 
       // If at least 2 indicators exist, treat as a job post
       return (
-        [hasJobTitle, hasResponsibilities, hasApply].filter(Boolean).length >= 2
+        [hasJobTitle, hasResponsibilities, hasApply].filter(Boolean).length >= 1
       );
     };
 

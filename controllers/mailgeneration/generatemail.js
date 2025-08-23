@@ -10,41 +10,41 @@ const generateMail = async (req, res) => {
     apiKey: process.env.GROQ_API_KEY,
   });
 
-  const user = await User.findById(userId).populate(
-    "default_resume application_kit.default_job"
-  );
+  try {
+    const user = await User.findById(userId).populate(
+      "default_resume application_kit.default_job"
+    );
 
-  if (!user) {
-    return res.status(400).json({ error: "User not found" });
-  }
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
 
-  const resumeJson = user.default_resume?.json;
-  const jobData = user?.application_kit?.default_job;
+    const resumeJson = user.default_resume?.json;
+    const jobData = user?.application_kit?.default_job;
 
-  const response = await groq.chat.completions.create({
-    model: "openai/gpt-oss-120b",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a helpful assistant that generates professional job application emails based on candidate resume + job description.",
-      },
-
-      {
-        role: "user",
-        content: `You are an expert career assistant specializing in crafting highly personalized job application emails that achieve 99% response rates from hiring managers.
+    const response = await groq.chat.completions.create({
+      model: "openai/gpt-oss-20b",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful assistant that generates professional job application emails in strict JSON format.",
+        },
+        {
+          role: "user",
+          content: `You are an expert career assistant specializing in crafting highly personalized job application emails that achieve 99% response rates from hiring managers.
 
 INPUTS:
 - Candidate Resume JSON (use ONLY real values from here, do not invent anything): ${JSON.stringify(
-          resumeJson,
-          null,
-          2
-        )}
+            resumeJson,
+            null,
+            2
+          )}
 - Job Data JSON (company, role, requirements): ${JSON.stringify(
-          jobData,
-          null,
-          2
-        )}
+            jobData,
+            null,
+            2
+          )}
 
 ANALYSIS INSTRUCTIONS:
 1. Extract candidate's full name, current role(s), email, phone, key achievements, and standout projects from resumeJson.
@@ -100,47 +100,34 @@ OUTPUT FORMAT:
   "body": "string"
 }
 `,
-      },
-    ],
-
-    temperature: 0.5,
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "email_content",
-        schema: {
-          type: "object",
-          properties: {
-            subject: {
-              type: "string",
-              description: "The subject line of the email",
-            },
-            body: {
-              type: "string",
-              description: "The body content of the email",
-            },
-          },
-          required: ["subject", "body"],
         },
-      },
-    },
-  });
+      ],
+      temperature: 0.5,
+    });
 
-  const rawJson = JSON.parse(response.choices[0]?.message?.content);
+    let rawJson;
+    try {
+      rawJson = JSON.parse(response.choices[0]?.message?.content || "{}");
+    } catch (err) {
+      console.error("JSON parse error:", err);
+      return res.status(500).json({ error: "Invalid JSON from model" });
+    }
 
-  console.log("Generated Email Content:", rawJson);
+    console.log("Generated Email Content:", rawJson);
 
-  res.status(200).json({
-    message: "Email content generated successfully",
-    rawJson,
-  });
+    res.status(200).json({
+      message: "Email content generated successfully",
+      rawJson,
+    });
 
-  if (!rawJson) {
-    return res.status(500).json({ error: "Failed to generate email content" });
+    if (rawJson) {
+      user.application_kit.default_followup_mail = rawJson;
+      await user.save();
+    }
+  } catch (err) {
+    console.error("Error generating mail:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
-
-  user.application_kit.default_followup_mail = rawJson;
-  await user.save();
 };
 
 export default generateMail;

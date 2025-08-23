@@ -31,24 +31,32 @@ const saveCoverletter = async (req, res) => {
         .json({ error: "Cover letter data is not provided" });
     }
 
+    const cleanFileName = (name) => {
+      return name
+        .replace(/[^a-zA-Z0-9 ]/g, "") // keep only letters, numbers, spaces
+        .replace(/\s+/g, " ") // collapse multiple spaces
+        .trim();
+    };
+
+    const rawTitle = defaultJob?.job_title || "Job";
+    const filename = `${cleanFileName(rawTitle)}_CoverLetter.pdf`;
+
     const html = coverLetterTemplate(user.default_resume?.json, coverletter);
     const buffer = await downloadPdf(html);
-    const result = await uploadPdfBuffer(
-      buffer,
-      `${defaultJob?.job_title}_Coverletter.pdf`,
-      "coverletters"
-    );
+    const result = await uploadPdfBuffer(buffer, filename, "coverletters");
 
     if (result) {
       const newCoverLetter = await Coverletter.create({
         userId,
         body: coverletter,
         url: result.secure_url,
-        filename: `${defaultJob?.job_title || "Job"}_Coverletter.pdf`,
+        primary: isDefaultCoverLetter || false,
+        jobId: defaultJob?._id,
+        filename: filename,
       });
 
       if (isDefaultCoverLetter === true) {
-        user.application_kit.default_cover_letter = res._id;
+        user.application_kit.default_cover_letter = newCoverLetter._id;
         await user.save();
       }
 

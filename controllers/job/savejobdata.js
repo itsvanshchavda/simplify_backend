@@ -16,6 +16,10 @@ const savejobdata = async (req, res) => {
       return res.status(400).json({ error: "Job data is not provided" });
     }
 
+    if (!jobData.job_url) {
+      return res.status(400).json({ error: "Job URL is required" });
+    }
+
     const existingJob = await Job.findOne({ userId, job_url: jobData.job_url });
     if (existingJob) {
       return res
@@ -23,22 +27,28 @@ const savejobdata = async (req, res) => {
         .json({ error: "Job with this URL already exists" });
     }
 
+    // If this job should be default, unset existing default first
     if (isDefaultJob) {
       await Job.updateMany(
         { userId, primary: true },
         { $set: { primary: false } }
       );
-
-      await User.findByIdAndUpdate(userId, { default_job: newJob._id });
     }
 
     const newJob = new Job({
       ...jobData,
       userId,
-      primary: !!isDefaultJob, // true/false
+      primary: !!isDefaultJob, // only true if requested
     });
 
     await newJob.save();
+
+    // Update user's default_job reference if needed
+    if (isDefaultJob) {
+      await User.findByIdAndUpdate(userId, {
+        default_job: newJob._id,
+      });
+    }
 
     return res.status(201).json({
       message: "Job data saved successfully",

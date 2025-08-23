@@ -1,5 +1,4 @@
 const coverLetterTemplate = (resume, coverletter) => {
-  console.log("🚀 ~ coverLetterTemplate ~ data:", coverletter);
   // Extract personal info from resume
   const personalInfo = resume?.parsedPersonalInfo || {};
 
@@ -166,4 +165,22 @@ const coverLetterTemplate = (resume, coverletter) => {
   return htmlContent;
 };
 
-export default coverLetterTemplate;
+const data =
+  "Dear Prism Cloud Consulting Inc. Hiring Team,\n" +
+  "\n" +
+  "I am writing to express my enthusiasm for the Full Stack Developer – React and Node position at Prism Cloud Consulting Inc. With a year of hands‑on experience building scalable SaaS solutions, I have led the development of a React.JS/Next.JS front‑end and a Node.JS/TypeScript back‑end for Enshrine Global Systems, deploying the stack on AWS EC2 and S3 and integrating MongoDB for high‑performance data access. As CTO & Founder of Writix AI, I launched a generative‑AI SaaS that attracted 650+ users on day one, integrating Llama, Gemini, and Mixtral models via AWS Lambda and DynamoDB, and exposing robust RESTful APIs to the front‑end. My technical toolkit aligns perfectly with your requirements: React.JS, Node.JS, AWS (EC2, Lambda, S3, RDS, DynamoDB), Generative AI (GPT, BERT, GANs), Redux, React Router, microservices, and both SQL and NoSQL databases. I hold a Full Stack Developer certification from Zero to Mastery and contributed to GirlsScript Summer of Code 2024.\n" +
+  "\n" +
+  "I am excited about Prism Cloud’s commitment to cloud‑first, AI‑enabled solutions and would welcome the opportunity to discuss how my background can accelerate your product roadmap. Thank you for considering my application; I look forward to speaking with you soon.";
+
+const htmlData = coverLetterTemplate(
+  {
+    parsedPersonalInfo: {
+      firstName: "John",
+      lastName: "Doe",
+      phone: "123-456-7890",
+      email: "",
+    },
+  },
+  data
+);
+console.log("🚀 ~ html:", htmlData);
