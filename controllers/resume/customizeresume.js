@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import User from "../../models/User.js";
 const customizeResume = async (req, res) => {
   try {
-    const { job_title, description, job_skills, save } = req.body;
+    const { job_title, description, job_skills } = req.body;
 
     const user = await User.findById(req.user.id).populate("default_resume");
 
@@ -18,50 +18,44 @@ const customizeResume = async (req, res) => {
       contents: [
         {
           text: `
-            Customize my experiences, skills, and professional summary based on the following job details:\n
-            - Job title: ${job_title}\n
-            - Job description: ${description}\n 
-            - Required skills: ${job_skills}\n
+Customize my resume for this job:
+- Job title: ${job_title}
+- Job description: ${description}
+- Required skills: ${job_skills}
 
-            My current resume is ${JSON.stringify(userResume)}\n
-            My experiences are ${JSON.stringify(userExp)}\n
-            
-            Important Instructions:\n
-            - Use ${userResume} contact info (firstName, lastName, email, phone, linkedin, github) only do not add random contact info\n
-            - Use the existing projects from the resume if available.\n
-            - Ensure date consistency across all sections (education, experience, projects) using the three-letter month format (MMM YYYY). Example: "Jan 2023", "Feb 2021". Convert all dates into this format.  
-            - If any section is missing data, return an empty string ("").
-            - Modify the professional summary to highlight relevant experience and skills for the job\n
-            - Highlight keywords in summary using <strong> tags\n
-            - Calculate total years of experience based on the provided work history\n
-            - Modify the experiences to better match the job requirements\n
-            - Improve experience points to show quantitative impact with required skills\n
-            - Make experiences as relevant to the job description as possible\n
-            - Add/modify skills to match job requirements while keeping relevant existing skills\n
-            - Create a consolidated list of all skills (required, nice-to-have, and existing)\n
-            - Ensure each experience maintains the same number of points as the input\n
-            - Do not use the target company name in the experience section\n
-            - Return exactly 2 experiences\n
-            - Do not mention years of experience in summary section \n
-            - Do not change company name if its already there in user experience leave company location empty take it from my experiences \n
-            - Also do not change title/role of experience if it already exists in user experience \n
-            - Do not reduce number of points in any experience (number of input point should be equal to output points)\n
-            - each point in experience , projects description array must be wrapped in <li> tag, add <ul> tag at the start and end of the array example : ["<ul>""<li>point 1 </li>""<li>point two </li>""<li>point 3 </li>""</ul>"]\n
-            - Highlight keywords in summary and experience section using <strong> tag (strictly use only <strong> tag for highlighting)\n
-            - Improve resume points to show Quantitative impact with the skills required in job\n
-            - Use Listed skills: ${job_skills} multiple times in the resume, in the last few experiences to show strong experience in the skills. If ${job_skills} is empty, then extract the skills required for the job from the ${description}\n
-            - Integrate Important Skills and the supporting skills in the experience points seamlessly into the real projects showing expertise\n
-            - Use XYZ format for the experience points, The X refers to what was accomplished, Y refers to how it was measured, and Z refers to how it was accomplished\n
-            - While rewriting, be specific and avoid general points. Assume you have worked in depth on these technologies\n
-            - Ensure the inclusion of supporting skills and enrich the content with as many relevant skills as possible to make it more specific, detailed\n
-            - Please do not mention, reference, or include any information about security clearances, citizenship status, or visa-related details anywhere in the resume\n
-          `,
+Current resume: ${JSON.stringify(userResume)}
+Current experiences: ${JSON.stringify(userExp)}
+
+STRICT RULES:
+1. Contact Info: Use ONLY existing contact from userResume (firstName, lastName, email, phone, linkedin, github)
+2. Dates: Convert ALL dates to "MMM YYYY" format (Jan 2023, Feb 2021)
+3. Experiences: Return exactly 2 experiences, keep same number of bullet points as input
+4. Companies: Keep existing company names and job titles, leave location empty
+5. HTML Format: Wrap experience points like: ["<ul>","<li>point 1</li>","<li>point 2</li>","</ul>"]
+6. Keywords: Use <strong> tags to highlight important skills in summary and experience
+7. Skills Integration: Use ${job_skills} throughout experience points naturally
+8. XYZ Format: Each point should show What accomplished + How measured + How done
+9. Quantify: Add numbers, percentages, metrics to show impact
+10. No Prohibited Content: Never mention security clearance, citizenship, or visa status
+
+CUSTOMIZATION FOCUS:
+- Rewrite professional summary to match job requirements
+- Calculate total experience years from work history (don't mention specific years in summary)
+- Make experience points highly relevant to job description
+- Add quantified achievements using required skills
+- Combine all relevant skills (existing + job required)
+- If job_skills is empty, extract skills from job description
+- Be specific, avoid generic statements
+- Show deep expertise in mentioned technologies
+
+OUTPUT: Complete resume object with all sections properly formatted.
+`,
         },
       ],
       config: {
         temperature: 0.1,
         systemInstruction:
-          "You are a helpful assistant designed to output resume in json format, your output will be used directly to compile a pdf",
+          "You are a resume optimization assistant based on the job data. Output only valid JSON format that will be directly compiled to PDF. Be precise, professional, and follow all formatting requirements exactly.",
 
         responseMimeType: "application/json",
         responseJsonSchema: {

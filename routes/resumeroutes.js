@@ -10,6 +10,9 @@ import updateDefaultResume from "../controllers/resume/updatedefaultresume.js";
 import getAllResumes from "../controllers/resume/getallresumes.js";
 import makeprimary from "../controllers/resume/makeprimary.js";
 import deleteReusume from "../controllers/resume/deleteresume.js";
+import resumeFromScratch from "../controllers/resume/resumefromscratch.js";
+import getResumeById from "../controllers/resume/getresumebyid.js";
+import updateResume from "../controllers/resume/updateresume.js";
 const router = express.Router();
 
 router.route("/parse-text").post(parseText);
@@ -22,5 +25,7 @@ router.route("/update-defaultresume").post(protectUser, updateDefaultResume);
 router.route("/getallresume", protectUser).get(protectUser, getAllResumes);
 router.route("/make-primary").post(protectUser, makeprimary);
 router.route("/delete-resume/:id").delete(protectUser, deleteReusume);
-
+router.route("/resume-scratch").get(protectUser, resumeFromScratch);
+router.route("/update-resume").post(protectUser, updateResume);
+router.route("/getresume").post(protectUser, getResumeById);
 export default router;

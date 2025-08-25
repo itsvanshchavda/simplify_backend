@@ -459,9 +459,9 @@ const resumeTemplate = (parsedData) => {
                 (cert) => `
               <div class="certification-item">
                 ${
-                  cert?.["certification/acchivement"]
+                  cert?.title
                     ? `
-                  <div>${cert["certification/acchivement"]}</div>
+                  <div>${cert?.title}</div>
                 `
                     : ""
                 }

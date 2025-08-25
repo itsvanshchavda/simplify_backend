@@ -18,6 +18,8 @@ const convertJson = async (resumeText) => {
 
 ${resumeText}
 
+
+
 FORMATTING RULES:
 - Dates: Use "MMM YYYY" format (Jan 2023, Dec 2021)
 - Missing data: Return empty strings ""
