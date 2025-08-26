@@ -11,7 +11,7 @@ const convertJson = async (resumeText) => {
   });
 
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     contents: [
       {
         text: `Parse this resume into structured JSON data:
@@ -21,13 +21,23 @@ ${resumeText}
 
 
 FORMATTING RULES:
-- Dates: Use "MMM YYYY" format (Jan 2023, Dec 2021)
+
+
+- Start the user  summary naturally with: I am ... (do NOT use <strong> on "I am").  
+- Make it results-driven, emphasize concrete achievements and technical strengths.  
+- Use <strong> ONLY for highlighting key skills, technologies, tools, or quantifiable results.  
+- Do NOT bold common words, connectors, or the intro phrase.  
+- Ensure the tone feels professional, human-written, and engaging.  
+- Return ONLY valid HTML in a single <p> block (no JSON, no markdown, no lists).  
+
+- Dates: Always format as "MMM YYYY" (e.g., Jan 2023, Dec 2021) and for ongoing roles use "MMM YYYY - Present" (never repeat the year).
 - Missing data: Return empty strings ""
 - Please include an user summary field also based on the resume text
 - Experience descriptions: Format as "<ul><li>Point 1</li><li>Point 2</li></ul>"
 - Use <strong> tags for important keywords
 - Remove all \\n characters
-- For skills use proper headings of skills like "Programming Languages", "Frameworks", etc. and add skills accordingly.
+- Identify the languages the user speaks and their proficiency level (Basic, Conversational, Fluent, Native/Bilingual) with the language name as the title.
+
 
 CALCULATIONS:
 - totalYearsOfExperience: Sum all work experience durations (integer)
@@ -159,7 +169,8 @@ SUMMARY HANDLING:
                     type: Type.STRING,
                   },
                 },
-                date: {
+
+                startDate: {
                   type: Type.OBJECT,
                   properties: {
                     month: { type: Type.STRING },
@@ -167,8 +178,26 @@ SUMMARY HANDLING:
                   },
                   required: ["month", "year"],
                 },
+                endDate: {
+                  type: Type.OBJECT,
+                  properties: {
+                    month: { type: Type.STRING },
+                    year: { type: Type.STRING },
+                  },
+                  required: ["month", "year"],
+                },
+
+                present: { type: "boolean" },
               },
-              required: ["name", "link", "technologies", "description", "date"],
+              required: [
+                "name",
+                "link",
+                "technologies",
+                "description",
+                "startDate",
+                "endDate",
+                "present",
+              ],
             },
           },
           parsedSkills: {

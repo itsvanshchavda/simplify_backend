@@ -13,6 +13,7 @@ import deleteReusume from "../controllers/resume/deleteresume.js";
 import resumeFromScratch from "../controllers/resume/resumefromscratch.js";
 import getResumeById from "../controllers/resume/getresumebyid.js";
 import updateResume from "../controllers/resume/updateresume.js";
+import rewriteSummary from "../controllers/resume/rewritesummary.js";
 const router = express.Router();
 
 router.route("/parse-text").post(parseText);
@@ -28,4 +29,6 @@ router.route("/delete-resume/:id").delete(protectUser, deleteReusume);
 router.route("/resume-scratch").get(protectUser, resumeFromScratch);
 router.route("/update-resume").post(protectUser, updateResume);
 router.route("/getresume").post(protectUser, getResumeById);
+
+router.route("/rewrite-summary").post(protectUser, rewriteSummary);
 export default router;

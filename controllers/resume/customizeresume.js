@@ -164,6 +164,7 @@ OUTPUT: Complete resume object with all sections properly formatted.
                 type: Type.OBJECT,
                 properties: {
                   name: { type: Type.STRING },
+                  link: { type: Type.STRING },
                   description: { type: Type.STRING },
                   technologies: {
                     type: Type.ARRAY,
@@ -171,7 +172,8 @@ OUTPUT: Complete resume object with all sections properly formatted.
                       type: Type.STRING,
                     },
                   },
-                  date: {
+
+                  startDate: {
                     type: Type.OBJECT,
                     properties: {
                       month: { type: Type.STRING },
@@ -179,8 +181,26 @@ OUTPUT: Complete resume object with all sections properly formatted.
                     },
                     required: ["month", "year"],
                   },
+                  endDate: {
+                    type: Type.OBJECT,
+                    properties: {
+                      month: { type: Type.STRING },
+                      year: { type: Type.STRING },
+                    },
+                    required: ["month", "year"],
+                  },
+
+                  present: { type: "boolean" },
                 },
-                required: ["name", "technologies", "description", "date"],
+                required: [
+                  "name",
+                  "link",
+                  "technologies",
+                  "description",
+                  "startDate",
+                  "endDate",
+                  "present",
+                ],
               },
             },
             parsedSkills: {
