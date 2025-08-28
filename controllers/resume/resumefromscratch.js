@@ -18,17 +18,11 @@ const resumeFromScratch = async (req, res) => {
       return res.status(400).json({ error: "User not found" });
     }
 
-    const userResume = user?.default_resume?.json;
-
     const json = {
       parsedPersonalInfo: {
-        firstName: userResume?.parsedPersonalInfo?.firstName,
-        lastName: userResume?.parsedPersonalInfo?.lastName,
-        phone: userResume?.parsedPersonalInfo?.phone,
-        email: userResume?.parsedPersonalInfo?.email,
-        linkedin: userResume?.parsedPersonalInfo?.linkedin,
-        github: userResume?.parsedPersonalInfo?.github,
-        website: userResume?.parsedPersonalInfo?.website,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        email: user?.email,
       },
       parsedEducation: [],
       parsedExperience: [],
@@ -37,14 +31,13 @@ const resumeFromScratch = async (req, res) => {
       parsedAchievementsAndCertifications: [],
       totalYearsOfExperience: user?.totalYearsOfExperience || 0,
       allSkills: [],
-      degreeType: userResume?.degreeType || 0,
     };
     const text = JSON.stringify(json).replace(/\s+/g, "");
     // Convert text to JSON
     const html = resumeTemplate(json);
     const buffer = await downloadPdf(html);
 
-    const fileName = `${userResume?.parsedPersonalInfo?.firstName}_${userResume?.parsedPersonalInfo?.lastName}`;
+    const fileName = `${user?.firstName}_${user?.lastName}`;
     const result = await uploadPdfBuffer(buffer);
 
     const newResume = await new Resume({

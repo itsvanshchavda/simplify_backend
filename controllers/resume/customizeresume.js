@@ -2,12 +2,17 @@ import { GoogleGenAI, Type } from "@google/genai";
 import User from "../../models/User.js";
 const customizeResume = async (req, res) => {
   try {
-    const { job_title, description, job_skills } = req.body;
+    const { job_title, description, job_skills, customjson } = req.body;
 
     const user = await User.findById(req.user.id).populate("default_resume");
 
-    const userResume = user.default_resume?.json;
-    const userExp = user.default_resume?.json?.parsedExperience?.slice(0, 2);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userResume = customjson ? customjson : user.default_resume?.json;
+
+    const userExp = userResume.parsedExperience || [];
 
     const ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API,
@@ -19,36 +24,47 @@ const customizeResume = async (req, res) => {
         {
           text: `
 Customize my resume for this job:
-- Job title: ${job_title}
-- Job description: ${description}
-- Required skills: ${job_skills}
 
-Current resume: ${JSON.stringify(userResume)}
-Current experiences: ${JSON.stringify(userExp)}
+- Job Title: ${job_title}
+- Job Description: ${description}
+- Required Skills: ${job_skills}
+
+Current Resume: ${JSON.stringify(userResume)}
+Current Experiences: ${JSON.stringify(userExp)}
 
 STRICT RULES:
-1. Contact Info: Use ONLY existing contact from userResume (firstName, lastName, email, phone, linkedin, github)
-2. Dates: Convert ALL dates to "MMM YYYY" format (Jan 2023, Feb 2021)
-3. Experiences: Return exactly 2 experiences, keep same number of bullet points as input
-4. Companies: Keep existing company names and job titles, leave location empty
-5. HTML Format: Wrap experience points like: ["<ul>","<li>point 1</li>","<li>point 2</li>","</ul>"]
-6. Keywords: Use <strong> tags to highlight important skills in summary and experience
-7. Skills Integration: Use ${job_skills} throughout experience points naturally
-8. XYZ Format: Each point should show What accomplished + How measured + How done
-9. Quantify: Add numbers, percentages, metrics to show impact
-10. No Prohibited Content: Never mention security clearance, citizenship, or visa status
+1. Contact Info: Use ONLY from userResume (firstName, lastName, email, phone, linkedin, github).
+2. Dates: Format as "MMM YYYY" (e.g., Jan 2023). Use "MMM YYYY - Present" for ongoing roles.
+3. Set endDate = "" and present = true (never write "Present 2024").
+4. Experiences: Return exactly 2 experiences. Keep same number of bullet points per experience as input.
+5. Company & Titles: Keep existing company names and job titles. Leave location as "".
+6. Experience Points: Format strictly as: <ul><li>Point 1</li><li>Point 2</li></ul>
+7. XYZ Format: Each point must show What + How + Result (with numbers/metrics).
+8. Keywords: Highlight important skills, technologies, and metrics using <strong> tags. Do NOT bold connectors or common words.
+9. Skills Integration: Naturally weave ${job_skills} into summary and experience points.
+10. Summary:
+   - Must begin with "I am ..."
+   - Be results-driven, professional, human-like, and engaging.
+   - 0–175 words: single <p>. Over 175 words: split into 3 paragraphs with <p>.
+   - Highlight important skills with <strong>.
+11. Skills:
+   - Combine all relevant skills (existing parsedSkills + job_skills).
+   - If job_skills is empty, extract from job description.
+12. Education: Detect highest degree (degreeType: 0 = Bachelor's, 1 = Master's, 2 = PhD).
+13. Languages: Identify languages spoken and classify as Basic, Conversational, Fluent, or Native/Bilingual.
+14. Projects: For project links, return actual link if provided, else "".
+15. Missing Data: Always return empty strings "" for unavailable fields.
+16. Prohibited Content: Never mention citizenship, visa status, or clearance.
 
-CUSTOMIZATION FOCUS:
-- Rewrite professional summary to match job requirements
-- Calculate total experience years from work history (don't mention specific years in summary)
-- Make experience points highly relevant to job description
-- Add quantified achievements using required skills
-- Combine all relevant skills (existing + job required)
-- If job_skills is empty, extract skills from job description
-- Be specific, avoid generic statements
-- Show deep expertise in mentioned technologies
+CALCULATIONS:
+- totalYearsOfExperience = Sum of all work experience durations (integer).
+- allSkills = Flatten all skills into one array.
+- degreeType = Highest degree detected.
 
-OUTPUT: Complete resume object with all sections properly formatted.
+OUTPUT FORMAT:
+- Return a complete resume object with all sections properly filled.
+- Ensure summary and experiences are rewritten to align with the job requirements.
+- Output ONLY valid HTML (no JSON, no markdown, no extra text).
 `,
         },
       ],
@@ -194,7 +210,6 @@ OUTPUT: Complete resume object with all sections properly formatted.
                 },
                 required: [
                   "name",
-                  "link",
                   "technologies",
                   "description",
                   "startDate",
@@ -283,8 +298,7 @@ OUTPUT: Complete resume object with all sections properly formatted.
     const parsedResume = JSON.parse(customizedResume);
 
     return res.status(200).json({
-      message: "Resume customized successfully",
-      parsedResume,
+      resume: parsedResume,
     });
   } catch (error) {
     console.error("Error customizing resume:", error);

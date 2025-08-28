@@ -6,6 +6,8 @@ const resumeTemplate = (parsedData) => {
     parsedProjects,
     parsedSkills,
     parsedAchievementsAndCertifications,
+    parsedCustomSections,
+    parsedLanguages,
   } = parsedData;
 
   const resume = {
@@ -15,6 +17,8 @@ const resumeTemplate = (parsedData) => {
     projects: parsedProjects,
     technicalSkills: parsedSkills,
     achievementsAndCertifications: parsedAchievementsAndCertifications,
+    parsedCustomSections: parsedCustomSections,
+    parsedLanguages: parsedLanguages,
   };
 
   // CSS Styles with PDF-like formatting
@@ -116,7 +120,12 @@ const resumeTemplate = (parsedData) => {
           margin-bottom: 4px;
           margin-top: 4px;
         }
+          
         
+      .description p {
+  margin: 0;        /* remove top/bottom spacing from paragraphs */
+  padding: 0;
+}
         .description {
         padding-left: 15px;
       }
@@ -127,7 +136,7 @@ const resumeTemplate = (parsedData) => {
       }
   
       .description li {
-        margin-bottom: 3px;
+        margin-bottom: 0 0 3px 0;
         position: relative;
       }
   
@@ -142,6 +151,9 @@ const resumeTemplate = (parsedData) => {
           color: black;
           text-decoration: none;
       }
+
+
+     
       </style>
     `;
 
@@ -362,6 +374,34 @@ const resumeTemplate = (parsedData) => {
           `
               : ""
           }
+
+
+      ${
+        resume?.parsedLanguages?.length > 0
+          ? `
+      <section >
+        <h2 class="section-header">LANGUAGES</h2>
+        <div >
+
+        ${resume.parsedLanguages
+          .map(
+            (lang) => `
+              <div class="certification-item" style="margin-bottom: 8px;">
+                <span style="font-weight: 600;">${lang?.language || ""}</span>
+                ${lang?.proficiency ? `<div>${lang.proficiency}</div>` : ""}
+              </div>
+            `
+          )
+          .join("")}
+
+          </div>
+      </section>
+    `
+          : ""
+      }
+
+
+
   
           ${
             resume.projects && resume.projects.length > 0
@@ -473,6 +513,29 @@ const resumeTemplate = (parsedData) => {
         `
                : ""
            }
+
+
+        ${
+          resume.parsedCustomSections && resume.parsedCustomSections.length > 0
+            ? `
+      <section style="margin-top: 10px;">
+        ${resume.parsedCustomSections
+          .map(
+            (item) => `
+              <div class="experience-item">
+                <h2 class="section-header">
+                  ${item?.title || ""}
+                </h2>
+                <div class="description">${item?.content}</div>
+              </div>
+            `
+          )
+          .join("")}
+      </section>
+    `
+            : ""
+        }
+
         </div>
       </body>
       </html>

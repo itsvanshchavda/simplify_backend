@@ -14,6 +14,8 @@ import resumeFromScratch from "../controllers/resume/resumefromscratch.js";
 import getResumeById from "../controllers/resume/getresumebyid.js";
 import updateResume from "../controllers/resume/updateresume.js";
 import rewriteSummary from "../controllers/resume/rewritesummary.js";
+import toggleSharing from "../controllers/resume/togglesharing.js";
+import getSharedResume from "../controllers/resume/getsharedresume.js";
 const router = express.Router();
 
 router.route("/parse-text").post(parseText);
@@ -31,4 +33,6 @@ router.route("/update-resume").post(protectUser, updateResume);
 router.route("/getresume").post(protectUser, getResumeById);
 
 router.route("/rewrite-summary").post(protectUser, rewriteSummary);
+router.route("/toggle-sharing").post(protectUser, toggleSharing);
+router.route("/get-shared-resume").post(getSharedResume);
 export default router;

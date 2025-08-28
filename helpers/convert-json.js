@@ -29,7 +29,7 @@ FORMATTING RULES:
 - Do NOT bold common words, connectors, or the intro phrase.  
 - Ensure the tone feels professional, human-written, and engaging.  
 - Return ONLY valid HTML in a single <p> block (no JSON, no markdown, no lists).  
-
+- For projects link do not add "link" if no link is provided. add empty string "" instead.
 - Dates: Always format as "MMM YYYY" (e.g., Jan 2023, Dec 2021) and for ongoing roles use "MMM YYYY - Present" (never repeat the year).
 - Missing data: Return empty strings ""
 - Please include an user summary field also based on the resume text
@@ -191,7 +191,6 @@ SUMMARY HANDLING:
               },
               required: [
                 "name",
-                "link",
                 "technologies",
                 "description",
                 "startDate",
@@ -261,6 +260,7 @@ SUMMARY HANDLING:
           "parsedExperience",
           "parsedProjects",
           "parsedSkills",
+          "parsedLanguages",
           "parsedAchievementsAndCertifications",
           "totalYearsOfExperience",
           "allSkills",

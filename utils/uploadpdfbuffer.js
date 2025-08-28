@@ -17,7 +17,8 @@ const uploadPdfBuffer = (buffer, filename = "resume.pdf", folder) =>
       {
         resource_type: "raw", // raw is safest for non-image files
         folder: folder,
-        overwrite: false,
+        overwrite: true,
+        invalidate: true,
         public_id: filename.replace(/\.pdf$/i, ""),
         format: "pdf",
       },

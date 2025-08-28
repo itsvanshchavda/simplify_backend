@@ -44,12 +44,12 @@ const saveResume = async (req, res) => {
       text: resume_text,
       json,
       resume_type,
-      customized: true,
+      customized: job_id ? true : false,
       userId,
       skills: json.allSkills || [],
       yearsOfExperience: json.totalYearsOfExperience,
       degreeType: json.degreeType || 0,
-      jobinfo: job_id,
+      jobinfo: job_id || null,
     });
 
     return res.status(201).json({
