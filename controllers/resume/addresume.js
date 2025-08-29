@@ -100,7 +100,7 @@ const addResume = async (req, res) => {
       }
 
       return res.status(200).json({
-        message: "Resume added successfully",
+        message: `Resume "${resume?.filename}" uploaded successfully`,
         resume,
       });
     });

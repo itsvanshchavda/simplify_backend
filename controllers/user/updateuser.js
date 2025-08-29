@@ -13,11 +13,31 @@ const updateUser = async (req, res) => {
       default_followup_mail,
       default_cover_letter,
       onboardingCompleted,
+      work,
+      education,
+      socialLinks,
+      projects,
     } = req.body;
     const user = await User.findById(userId).populate("default_resume");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    if (socialLinks) {
+      user.socialLinks = socialLinks;
+    }
+
+    if (work) {
+      user.work = work;
+    }
+
+    if (projects) {
+      user.projects = projects;
+    }
+
+    if (education) {
+      user.education = education;
     }
 
     if (firstName) {
