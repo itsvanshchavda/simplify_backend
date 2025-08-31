@@ -1,5 +1,5 @@
 import downloadPdf from "../../utils/downloadpdf.js";
-import uploadPdfBuffer from "../../utils/uploadpdfbuffer.js";
+import uploadFile from "../../utils/uploadfile.js";
 import resumeTemplate from "./resumetemplate.js";
 
 const jsonToPdf = async (req, res) => {
@@ -14,7 +14,7 @@ const jsonToPdf = async (req, res) => {
 
     const html = resumeTemplate(parsedData);
     const buffer = await downloadPdf(html);
-    const result = await uploadPdfBuffer(buffer, filename);
+    const result = await uploadFile(buffer, filename);
 
     console.log("Uploaded PDF URL:", result);
 

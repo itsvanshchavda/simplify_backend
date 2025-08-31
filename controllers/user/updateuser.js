@@ -6,7 +6,6 @@ const updateUser = async (req, res) => {
 
     const {
       onboardingStep,
-      profilePicture,
       firstName,
       lastName,
       default_job,
@@ -17,8 +16,14 @@ const updateUser = async (req, res) => {
       education,
       socialLinks,
       projects,
+      skills,
+      languages,
     } = req.body;
-    const user = await User.findById(userId).populate("default_resume");
+    const user = await User.findById(userId)
+      .populate(
+        "default_resume application_kit.default_job application_kit.default_cover_letter"
+      )
+      .select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -36,8 +41,16 @@ const updateUser = async (req, res) => {
       user.projects = projects;
     }
 
+    if (skills) {
+      user.skills = skills;
+    }
+
     if (education) {
       user.education = education;
+    }
+
+    if (languages) {
+      user.languages = languages;
     }
 
     if (firstName) {
@@ -61,10 +74,6 @@ const updateUser = async (req, res) => {
 
     if (onboardingStep) {
       user.onboardingStep = onboardingStep;
-    }
-
-    if (profilePicture && profilePicture != null) {
-      user.profilePicture = profilePicture;
     }
 
     if (onboardingCompleted === true || onboardingCompleted === false) {

@@ -4,7 +4,7 @@ import upload from "../../middleware/upload.js";
 import Resume from "../../models/Resume.js";
 import User from "../../models/User.js";
 import downloadPdf from "../../utils/downloadpdf.js";
-import uploadPdfBuffer from "../../utils/uploadpdfbuffer.js";
+import uploadFile from "../../utils/uploadfile.js";
 import resumeTemplate from "./resumetemplate.js";
 
 const addResume = async (req, res) => {
@@ -45,11 +45,7 @@ const addResume = async (req, res) => {
 
       const html = resumeTemplate(extractedJson);
       const buffer = await downloadPdf(html);
-      const result = await uploadPdfBuffer(
-        buffer,
-        file.originalname,
-        "resumes"
-      );
+      const result = await uploadFile(buffer, file.originalname, "resumes");
 
       console.log("Uploaded PDF URL:", result);
 

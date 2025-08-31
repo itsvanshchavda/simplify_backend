@@ -1,7 +1,7 @@
 import Resume from "../../models/Resume.js";
 import resumeTemplate from "./resumetemplate.js";
 import downloadPdf from "../../utils/downloadpdf.js";
-import uploadPdfBuffer from "../../utils/uploadpdfbuffer.js";
+import uploadFile from "../../utils/uploadfile.js";
 import { v2 as cloudinary } from "cloudinary";
 
 const updateResume = async (req, res) => {
@@ -44,7 +44,7 @@ const updateResume = async (req, res) => {
       const buffer = await downloadPdf(html);
 
       // Upload new PDF
-      const result = await uploadPdfBuffer(
+      const result = await uploadFile(
         buffer,
         filename || resume.filename,
         "resumes"

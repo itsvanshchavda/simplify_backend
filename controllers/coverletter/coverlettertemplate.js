@@ -1,5 +1,4 @@
 const coverLetterTemplate = (resume, coverletter) => {
-  console.log("🚀 ~ coverLetterTemplate ~ data:", coverletter);
   // Extract personal info from resume
   const personalInfo = resume?.parsedPersonalInfo || {};
 

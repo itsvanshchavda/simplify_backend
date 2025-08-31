@@ -10,7 +10,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadPdfBuffer = (buffer, filename = "resume.pdf", folder) =>
+const uploadFile = (buffer, filename = "resume.pdf", folder, format) =>
   new Promise((resolve, reject) => {
     // Configure the upload
     const uploadStream = cloudinary.uploader.upload_stream(
@@ -20,7 +20,7 @@ const uploadPdfBuffer = (buffer, filename = "resume.pdf", folder) =>
         overwrite: true,
         invalidate: true,
         public_id: filename.replace(/\.pdf$/i, ""),
-        format: "pdf",
+        format: format || "pdf",
       },
       (error, result) => {
         if (error) return reject(error);
@@ -34,4 +34,4 @@ const uploadPdfBuffer = (buffer, filename = "resume.pdf", folder) =>
     readable.pipe(uploadStream);
   });
 
-export default uploadPdfBuffer;
+export default uploadFile;

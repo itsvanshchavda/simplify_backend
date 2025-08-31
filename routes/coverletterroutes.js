@@ -4,6 +4,7 @@ import generateCoverLetter from "../controllers/coverletter/generatecoverletter.
 import saveCoverletter from "../controllers/coverletter/savecoverletter.js";
 import getAllLetters from "../controllers/coverletter/getcoverletters.js";
 import deleteLeter from "../controllers/coverletter/deleteletter.js";
+import getCoverletterById from "../controllers/coverletter/getcoverletterbyid.js";
 
 const router = express.Router();
 
@@ -11,5 +12,6 @@ router.route("/getall-letters").get(protectUser, getAllLetters);
 router.route("/generate-letter").get(protectUser, generateCoverLetter);
 router.route("/save-letter").post(protectUser, saveCoverletter);
 router.route("/delete-letter/:id").delete(protectUser, deleteLeter);
+router.route("/getcoverletter").post(protectUser, getCoverletterById);
 
 export default router;

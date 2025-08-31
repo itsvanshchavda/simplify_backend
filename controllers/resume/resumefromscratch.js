@@ -1,7 +1,7 @@
 import Resume from "../../models/Resume.js";
 import User from "../../models/User.js";
 import downloadPdf from "../../utils/downloadpdf.js";
-import uploadPdfBuffer from "../../utils/uploadpdfbuffer.js";
+import uploadFile from "../../utils/uploadfile.js";
 import resumeTemplate from "./resumetemplate.js";
 
 const resumeFromScratch = async (req, res) => {
@@ -38,7 +38,7 @@ const resumeFromScratch = async (req, res) => {
     const buffer = await downloadPdf(html);
 
     const fileName = `${user?.firstName}_${user?.lastName}`;
-    const result = await uploadPdfBuffer(buffer);
+    const result = await uploadFile(buffer);
 
     const newResume = await new Resume({
       userId: userId,

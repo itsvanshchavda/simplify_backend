@@ -1,7 +1,7 @@
 import Coverletter from "../../models/Coverletter.js";
 import User from "../../models/User.js";
 import downloadPdf from "../../utils/downloadpdf.js";
-import uploadPdfBuffer from "../../utils/uploadpdfbuffer.js";
+import uploadFile from "../../utils/uploadfile.js";
 import coverLetterTemplate from "./coverlettertemplate.js";
 
 const saveCoverletter = async (req, res) => {
@@ -43,7 +43,7 @@ const saveCoverletter = async (req, res) => {
 
     const html = coverLetterTemplate(user.default_resume?.json, coverletter);
     const buffer = await downloadPdf(html);
-    const result = await uploadPdfBuffer(buffer, filename, "coverletters");
+    const result = await uploadFile(buffer, filename, "coverletters");
 
     if (result) {
       const newCoverLetter = await Coverletter.create({
