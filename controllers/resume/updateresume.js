@@ -68,7 +68,6 @@ const updateResume = async (req, res) => {
           skills: json.allSkills || [],
           yearsOfExperience: json.totalYearsOfExperience || 0,
           degreeType: json.degreeType || 0,
-          url: result?.secure_url,
         },
         { new: true }
       );
