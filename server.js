@@ -14,13 +14,9 @@ import coverletterRoutes from "./routes/coverletterroutes.js";
 
 import resumeRoutes from "./routes/resumeroutes.js";
 mongoose
-  .connect(process.env.MONGO_URI, {})
-  .then(() => {
-    console.log("Database connected successfully");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ Database connected successfully"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 const app = express();
 const server = http.createServer(app);
