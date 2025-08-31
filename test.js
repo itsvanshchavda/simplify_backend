@@ -1,227 +1,181 @@
-import resumeTemplate from "./controllers/resume/resumetemplate.js";
+const coverLetterTemplate = (resume, coverletter, customdata) => {
+  // Extract personal info from resume
 
-const data = {
-  allSkills: [
-    "Python",
-    "Java",
-    "JavaScript",
-    "TypeScript",
-    "HTML",
-    "CSS",
-    "SCSS",
-    "SQL",
-    "React JS",
-    "Next JS",
-    "Angular 16",
-    "Redux Toolkit",
-    "RTK",
-    "Bootstrap 5",
-    "Tailwind CSS",
-    "Framer Motion",
-    "Node.js",
-    "Express.js",
-    "MongoDB",
-    "MySQL",
-    "Problem Solving",
-    "Critical thinking",
-    "Version Control",
-    "Git",
-    "GitHub",
-    "IDEs",
-    "Visual Studio Code",
-    "Sublime Text",
-    "Package Managers",
-    "npm",
-    "Browser Developer Tools",
-    "Chrome DevTools",
-    "Responsive Design Principles",
-    "Redux Dev Tools",
-  ],
-  degreeType: 0,
-  parsedAchievementsAndCertifications: [
-    {
-      title:
-        "Certification - ZTM (Zero to Mastery) – Full Stack Developer 2022",
-    },
-    {
-      title:
-        "GSSOC’24 - GirlsScript Summer of Code 2024 – Open-Source Contributor",
-    },
-  ],
-  parsedEducation: [
-    {
-      degree: "Diploma In Information Technology",
-      endDate: {
-        month: "Jun",
-        year: "2024",
-      },
-      fieldOfStudy: "Information Technology",
-      location: "Bhavnagar, Gujarat",
-      school: "Sir Bhavsinhji Polytechnic Institute",
-      startDate: {
-        month: "Jun",
-        year: "2021",
-      },
-    },
-  ],
-  parsedExperience: [
-    {
-      company: "Enshrine Global Systems",
-      description:
-        "<ul><li>Developed a SaaS app with Next JS, Typescript, Node JS, React JS, and Tailwind CSS.</li><li>Optimized application performance and enhanced code quality through efficient frontend integration and best practices.</li></ul>",
-      endDate: {
-        month: "Present",
-        year: "2024",
-      },
-      location: "",
-      present: true,
-      startDate: {
-        month: "Jun",
-        year: "2024",
-      },
-      title: "Full Stack Developer",
-    },
-  ],
-  parsedPersonalInfo: {
-    email: "vanshchavda328@gmail.com",
-    firstName: "Vansh",
-    github: "github.com",
-    lastName: "Chavda",
-    linkedin: "linkedin.com",
-    phone: "+91 9737419935",
-    summary:
-      "<strong>Vansh Chavda</strong> is a <strong>Full Stack Developer</strong> with experience in developing SaaS applications using technologies like Next JS, TypeScript, Node JS, React JS, and Tailwind CSS.  He has a proven ability to optimize application performance and enhance code quality.  His project experience includes building a full-stack blog with robust user interaction features and real-time analytics, as well as developing admin dashboards and e-commerce features for various clients.  Vansh is proficient in multiple programming languages, frameworks, and backend development tools, and possesses strong problem-solving skills. He is also an active open-source contributor and holds a ZTM Full Stack Developer certification.",
-    website: "",
-  },
-  parsedProjects: [
-    {
-      date: {
-        month: "",
-        year: "",
-      },
-      description:
-        "<ul><li>Implement robust mechanisms for users to follow and unfollow others seamlessly.</li><li>Utilize RTK Query and Redux Toolkit for efficient data retrieval, with integrated Cloudinary support for media handling.</li><li>Develop a real-time analytics dashboard to monitor user interactions and content performance.</li><li>Enable features to like, bookmark, and share posts across various social media platforms.</li><li>Ensure scalability and responsiveness, supporting up to 500 + simultaneous users.</li></ul>",
-      link: "link",
-      name: "Stack Spot - Full Stack Blog",
-      technologies: [
-        "React Js",
-        "Node Js",
-        "Express Js",
-        "Redux Toolkit",
-        "RTK",
-        "Tailwind CSS",
-      ],
-    },
-    {
-      date: {
-        month: "",
-        year: "",
-      },
-      description:
-        "<ul><li>Implemented the admin dashboard support.</li><li>Configure and manage firebase for seamless user data persistence.</li><li>Develop robust add-to-cart features for a streamlined shopping experience.</li></ul>",
-      link: "link",
-      name: "Fusion Restaurant",
-      technologies: ["React Js", "Redux Toolkit", "TypeScript", "Tailwind CSS"],
-    },
-    {
-      date: {
-        month: "",
-        year: "",
-      },
-      description:
-        "<ul><li>Implement functionality to gather news from all major news channels.</li><li>Ensure a fully responsive design for optimal viewing on all devices.</li><li>Integrate with News APIs for real-time news updates and content delivery.</li></ul>",
-      link: "link",
-      name: "World News",
-      technologies: ["Angular 16", "Typescript", "Material UI", "Tailwind CSS"],
-    },
-    {
-      date: {
-        month: "",
-        year: "",
-      },
-      description:
-        "<ul><li>Implement Add to Cart functionality with Backend API integration.</li><li>Ensure secure user authentication and customizable notification preferences.</li><li>Integrate Razorpay for seamless payment processing and a robust admin panel for management.</li><li>Support targeted advertising with Flipkart Ads integration.</li><li>Develop an admin panel for efficient management of products and orders.</li></ul>",
-      link: "link",
-      name: "School Bazar",
-      technologies: ["React Js", "Tailwind CSS", "Node Js", "Mongo DB"],
-    },
-  ],
-  parsedSkills: [
-    {
-      heading: "Programming Languages",
-      skills: [
-        "Python",
-        "Java",
-        "JavaScript",
-        "TypeScript",
-        "HTML",
-        "CSS",
-        "SCSS",
-        "SQL",
-      ],
-    },
-    {
-      heading: "Frameworks",
-      skills: [
-        "React JS",
-        "Next JS",
-        "Angular 16",
-        "Redux Toolkit",
-        "RTK",
-        "Bootstrap 5",
-        "Tailwind CSS",
-        "Framer Motion",
-      ],
-    },
-    {
-      heading: "Backend Development",
-      skills: ["Node.js", "Express.js", "MongoDB", "MySQL"],
-    },
-    {
-      heading: "Developer Tools",
-      skills: [
-        "Problem Solving",
-        "Critical thinking",
-        "Version Control",
-        "Git",
-        "GitHub",
-        "IDEs",
-        "Visual Studio Code",
-        "Sublime Text",
-        "Package Managers",
-        "npm",
-        "Browser Developer Tools",
-        "Chrome DevTools",
-        "Responsive Design Principles",
-        "Redux Dev Tools",
-      ],
-    },
-  ],
-  totalYearsOfExperience: 1,
-  parsedLanguages: [
-    {
-      language: "New Languagesdsdfsdf",
-      proficiency: "Intermediate",
-    },
-    {
-      language: "New Language",
-      proficiency: "Beginner",
-    },
-  ],
+  const personalInfo = resume?.parsedPersonalInfo ?? customdata;
 
-  parsedCustomSections: [
-    {
-      title: "New Section",
-      content:
-        "<ul><li><p>sdfsdfsdfdsdf</p></li><li><p>nsdf</p></li><li><p>kmsdf</p></li></ul><p></p>",
-    },
-    {
-      title: "New Sectionsfsdfsdfsdf",
-      content:
-        "<ul><li><p><strong>sdsdfsfd</strong></p></li><li><p><em>sdf</em></p></li></ul><p>sdf</p><p></p>",
-    },
-  ],
+  // Function to convert newlines to HTML paragraphs
+  const formatCoverLetter = (text) => {
+    if (!text) return "";
+
+    const str = String(text); // ensure it's always a string
+    const paragraphs = str.split("\n\n").filter((p) => p.trim());
+
+    return paragraphs
+      .map((paragraph) => {
+        const cleanParagraph = paragraph.replace(/\n/g, " ").trim();
+        return `<p>${cleanParagraph}</p>`;
+      })
+      .join("");
+  };
+
+  // CSS Styles matching the resume template
+  const cssStyles = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Tinos:wght@400;700&display=swap');
+      
+      body {
+        font-family: 'Tinos', serif;
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 0;
+        padding: 30px;
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+      }
+      
+      .a4-paper {
+  
+        width: 100%;
+        background: white;
+        padding: 0;
+      }
+      
+      .header {
+        margin-bottom: 32px;
+        border-bottom: 0.08rem solid #808080;
+        padding-bottom: 24px;
+        padding-left: 32px;
+        padding-right: 32px;
+        padding-top: 32px;
+      }
+      
+      .full-name {
+        font-size: 28px;
+        font-weight: bold;
+        color: #111827;
+        margin-bottom: 16px;
+      }
+      
+      .contact-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        color: #4B5563;
+      }
+      
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .contact-item svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+      }
+      
+      .email-item {
+        flex: 1;
+        min-width: 0;
+      }
+      
+      .letter-body {
+        padding: 0 32px 32px 32px;
+        text-align: justify;
+      }
+      
+      .letter-body p {
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      
+      .letter-body p:last-child {
+        margin-bottom: 0;
+      }
+      
+      a {
+        color: black;
+        text-decoration: none;
+      }
+      
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  `;
+
+  // Generate HTML content
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${personalInfo.firstName} ${
+    personalInfo.lastName
+  } - Cover Letter</title>
+      ${cssStyles}
+    </head>
+    <body>
+      <div class="a4-paper">
+        <!-- Header section -->
+        <header class="header">
+          <div class="full-name">
+            ${personalInfo.firstName} ${personalInfo.lastName}
+          </div>
+          <div class="contact-info">
+            ${
+              personalInfo.phone
+                ? `
+              <div class="contact-item">
+                <svg viewBox="0 0 20 20">
+                  <path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z"></path>
+                </svg>
+                <span>${personalInfo.phone}</span>
+              </div>
+            `
+                : ""
+            }
+            
+            ${
+              personalInfo.email
+                ? `
+              <div class="contact-item email-item">
+                <svg viewBox="0 0 20 20">
+                  <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"></path>
+                  <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"></path>
+                </svg>
+                <span>${personalInfo.email}</span>
+              </div>
+            `
+                : ""
+            }
+          </div>
+        </header>
+
+        <!-- Letter body -->
+        <div class="letter-body">
+          ${
+            coverletter
+              ? formatCoverLetter(coverletter)
+              : customdata?.coverletter
+          }
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return htmlContent;
 };
 
-const html = resumeTemplate(data);
-console.log(html);
+const data = coverLetterTemplate('', '' ,{
+  firstName: "John",
+  lastName: "Doe",
+  email: "",
+  phone: "1234567890",
+  coverletter: "ffff",
+});
+console.log("🚀 ~ data:", data);

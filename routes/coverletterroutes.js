@@ -14,5 +14,5 @@ router.route("/generate-letter").get(protectUser, generateCoverLetter);
 router.route("/save-letter").post(protectUser, saveCoverletter);
 router.route("/delete-letter/:id").delete(protectUser, deleteLeter);
 router.route("/getcoverletter").post(protectUser, getCoverletterById);
-router.route("/update-letter").put(protectUser, updateCoverletter);
+router.route("/update-letter").post(protectUser, updateCoverletter);
 export default router;

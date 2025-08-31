@@ -7,6 +7,14 @@ const coverletterSchema = new mongoose.Schema(
       ref: "users",
     },
 
+    formdata: {
+      firstName: { type: String },
+      lastName: { type: String },
+      email: { type: String },
+      phone: { type: String },
+      coverletter: { type: String },
+    },
+
     primary: {
       type: Boolean,
       default: false,

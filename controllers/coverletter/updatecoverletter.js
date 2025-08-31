@@ -23,7 +23,7 @@ const updateCoverletter = async (req, res) => {
     }
 
     if (customdata?.coverletter) {
-      if (coverletter.url) {
+      if (coverletter?.url) {
         try {
           const publicId = coverletter.url.split("/").pop().split(".")[0];
           await cloudinary.uploader.destroy(`coverletters/${publicId}`);
@@ -33,9 +33,16 @@ const updateCoverletter = async (req, res) => {
         }
       }
 
-      const html = coverLetterTemplate(customdata, coverletter);
+      const cleanFileName = filename?.replace(/%20/g, " ");
+
+      const html = coverLetterTemplate("", customdata?.coverletter, customdata);
       const buffer = await downloadPdf(html);
-      const result = await uploadFile(buffer, filename, "coverletters");
+      const result = await uploadFile(
+        buffer,
+        cleanFileName || coverletter?.filename,
+        "coverletters",
+        "pdf"
+      );
 
       if (!result) {
         return res.status(500).json({ error: "Failed to upload new PDF" });
@@ -47,7 +54,13 @@ const updateCoverletter = async (req, res) => {
           url: result.secure_url,
           filename,
           body: customdata.coverletter,
-          jobId: jobId || null,
+          formdata: {
+            firstName: customdata.firstName,
+            lastName: customdata.lastName,
+            email: customdata.email,
+            phone: customdata.phone,
+            coverletter: customdata.coverletter,
+          },
         },
         { new: true }
       );

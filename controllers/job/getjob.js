@@ -12,6 +12,12 @@ const getJob = async (req, res) => {
     return res.status(400).json({ error: "Job url is not provided" });
   }
 
+  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/\S*)?$/;
+
+  if (!urlRegex.test(url)) {
+    return res.status(400).json({ error: "Invalid URL format" });
+  }
+
   console.log(`🔍 Extracting from: ${url}`);
 
   try {
