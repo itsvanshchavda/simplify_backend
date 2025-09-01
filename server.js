@@ -14,7 +14,10 @@ import coverletterRoutes from "./routes/coverletterroutes.js";
 
 import resumeRoutes from "./routes/resumeroutes.js";
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    bufferCommands: false,
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => console.log("✅ Database connected successfully"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
